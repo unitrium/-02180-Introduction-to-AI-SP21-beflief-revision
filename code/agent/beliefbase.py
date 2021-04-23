@@ -19,7 +19,7 @@ class BeliefBase:
         sequence = to_cnf(sequence)
         
         if is_valid(sequence):
-            self.beliefBase.add(sequence)
+            self.beliefBase.append(sequence)
     
     def is_valid(sequence):
         """Check the validity of the input sequence"""
