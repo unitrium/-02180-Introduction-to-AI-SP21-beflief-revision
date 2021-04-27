@@ -9,21 +9,21 @@ class BeliefBase:
     beliefBase: A list containing the beliefs
     """
     beliefBase: dict
-    
+
     def __init__(self):
         self.beliefBase = {}
-        
-        
+
+
     def add(self, sequence):
         #Convert beliefs
-        sequence = to_cnf(sequence)
-        
+        converted = to_cnf(sequence)
+
         if is_valid(sequence):
-            self.beliefBase.append(sequence)
-    
+            self.beliefBase[sequence] = converted
+
     def is_valid(sequence):
         """Check the validity of the input sequence"""
         return 1
-    
+
     def display_belief(self) -> None:
         print(belief) for belief in self.beliefBase.keys()
