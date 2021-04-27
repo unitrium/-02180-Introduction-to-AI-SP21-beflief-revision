@@ -8,10 +8,10 @@ class BeliefBase:
     Initially empty
     beliefBase: A list containing the beliefs
     """
-    beliefBase: List[str]
+    beliefBase: dict
     
     def __init__(self):
-        self.beliefBase = [] #[None for _ in range(size)] ?
+        self.beliefBase = {}
         
         
     def add(self, sequence):
@@ -24,3 +24,6 @@ class BeliefBase:
     def is_valid(sequence):
         """Check the validity of the input sequence"""
         return 1
+    
+    def display_belief(self) -> None:
+        print(belief) for belief in self.beliefBase.keys()

@@ -1,10 +1,11 @@
-from code.agent import BeliefBase, Agent
+from code.agent import BeliefBase
 
 
 if __name__ == "__main__":
     bb = BeliefBase()
     while True:
-        print("The current belief base entails"+"Cn{"+"a->b"+","+"a"+"}")
+        print('Current belief base:')
+        bb.display_belief()
         var = input("Please add to the belief base: ")
         
         #   If the input is quit break (adin)
