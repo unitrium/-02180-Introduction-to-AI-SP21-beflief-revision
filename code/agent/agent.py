@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 
 
 class Action:
-    x: String #Add or remove a sequence or display the belief base
-    y: String #sequence to add or remove
+    x: str #Add or remove a sequence or display the belief base
+    y: str #sequence to add or remove
 
 class Agent:
     
@@ -13,7 +13,7 @@ class Agent:
         
         
         
-    def display(self, beliefBase: List[String]) -> None:
+    def display(self, beliefBase: List[str]) -> None:
         """Display the belief Base"""
         print("Belief Base")
         print()

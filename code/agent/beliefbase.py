@@ -8,7 +8,7 @@ class BeliefBase:
     Initially empty
     beliefBase: A list containing the beliefs
     """
-    beliefBase: List[String]
+    beliefBase: List[str]
     
     def __init__(self):
         self.beliefBase = [] #[None for _ in range(size)] ?
