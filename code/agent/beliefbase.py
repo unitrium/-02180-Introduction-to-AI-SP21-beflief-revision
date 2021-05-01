@@ -7,9 +7,11 @@ from .agent import Agent, Action
 class Belief:
     cnf: str
     priority: int
+    formula: str
 
-    def __init__(self, formulae: str, priority: int) -> None:
+    def __init__(self, formula: str, priority: int) -> None:
         self.priority = priority
+        self.formula = formula
         self.cnf = to_cnf(formulae)
 
 
@@ -39,11 +41,27 @@ class BeliefBase:
         for belief in self.beliefBase.keys():
             print(belief)
 
-    def _contract(self, new_belief: Belief, priority: int):
-        """Contracts the belief base. It is assumed that the new belief is not a tautology."""
+    def revise(self, new_formulae: str, priority: int):
+        new_belief = Belief(new_formulae, priority)
+        if self._contract(new_belief):
+            self._expand(new_belief)
+
+    def _expand(self, new_belief: Belief):
+        self.beliefBase[new_belief.formula] = new_belief
+
+    def _contract(self, new_belief: Belief) -> bool:
+        """Contracts the belief base. It is assumed that the new belief is not a tautology.
+        Returns a boolean on wether the new belief is compatible with existing beliefs
+        given the priority.
+        """
         to_remove = []
+        incompatibility = False
         for key, belief in enumerate(self.beliefBase):
-            if And(belief.cnf, Not(belief.cnf)):
-                to_remove.append(key)
+            if And(belief.cnf, Not(new_belief.cnf)):
+                if belief.priority < new_belief.priority:
+                    to_remove.append(key)
+                else:
+                    incompatibility = True
         for key in to_remove:
             self.beliefBase.pop(key)
+        return incompatibility
