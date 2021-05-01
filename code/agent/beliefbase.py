@@ -39,7 +39,7 @@ class BeliefBase:
         for belief in self.beliefBase.keys():
             print(belief)
 
-    def __contract(self, new_belief: Belief, priority: int):
+    def _contract(self, new_belief: Belief, priority: int):
         """Contracts the belief base. It is assumed that the new belief is not a tautology."""
         to_remove = []
         for key, belief in enumerate(self.beliefBase):
