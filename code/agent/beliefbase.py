@@ -67,39 +67,39 @@ class BeliefBase:
         return incompatibility
 
     def resolution(self, alpha: Belief) -> bool:
-    """Resolution Algorithm for propositional logic"""
-    """Figure 7.12 in the book"""
+        """Resolution Algorithm for propositional logic"""
+        """Figure 7.12 in the book"""
 
-    clauses = []  # Clauses is the set of clauses in the CNF representation of KB A !alpha
-    # Formalisaiton of KB as CNF
-    for kb in self.beliefBase.keys():
-        clauses.append(self.dissociate(kb, And))
+        clauses = []  # Clauses is the set of clauses in the CNF representation of KB A !alpha
+        # Formalisaiton of KB as CNF
+        for kb in self.beliefBase.keys():
+            clauses.append(self.dissociate(kb, And))
 
-    # Add CNF of the contradiction of alpha
-        clauses.append(self.dissociate(to_cnf(~alpha.cnf), And))
+        # Add CNF of the contradiction of alpha
+            clauses.append(self.dissociate(to_cnf(~alpha.cnf), And))
 
-    if False in clauses:
-        return True
+        if False in clauses:
+            return True
 
-    new = set()
-    while True:
-        n = len(clauses)
-        pairs = [(clauses[i], clauses[j])
-                 for i in range(n) for j in range(i+1, n)]
+        new = set()
+        while True:
+            n = len(clauses)
+            pairs = [(clauses[i], clauses[j])
+                     for i in range(n) for j in range(i+1, n)]
 
-        for ci, cj in pairs:
-            res = self.resolve(ci, cj)
-            if False in res:
-                # Empty clause
-                return True
-            new = new.union(set(res))
+            for ci, cj in pairs:
+                res = self.resolve(ci, cj)
+                if False in res:
+                    # Empty clause
+                    return True
+                new = new.union(set(res))
 
-        if new.issubset(set(clauses)):
-            return False
+            if new.issubset(set(clauses)):
+                return False
 
-        for c in new:
-            if c not in clauses:
-                clauses = clauses.append(new)
+            for c in new:
+                if c not in clauses:
+                    clauses = clauses.append(new)
 
     def resolve(self, ci, cj) -> list:
         """Returns the set of all possible clauses
