@@ -67,8 +67,9 @@ class BeliefBase:
         return incompatibility
 
     def resolution(self, alpha: Belief) -> bool:
-        """Resolution Algorithm for propositional logic"""
-        """Figure 7.12 in the book"""
+        """Resolution Algorithm for propositional logic.
+        Figure 7.12 in the book
+        """
 
         clauses = []  # Clauses is the set of clauses in the CNF representation of KB A !alpha
         # Formalisaiton of KB as CNF
@@ -107,8 +108,8 @@ class BeliefBase:
 
         resclauses = []
 
-        disci = dissociate(ci, Or)
-        discj = dissociate(cj, Or)
+        disci = self.dissociate(ci, Or)
+        discj = self.dissociate(cj, Or)
 
         for i in disci:
             for j in discj:
