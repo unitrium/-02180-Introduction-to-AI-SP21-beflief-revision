@@ -1,25 +1,21 @@
 """Class for defining the Agent"""
-from typing import List
-from abc import ABC, abstractmethod
+from typing import List, Tuple
+from .beliefbase import BeliefBase
 
-
-class Action:
-    x: str #Add or remove a sequence or display the belief base
-    y: str #sequence to add or remove
 
 class Agent:
-    
-    def __init__(self) -> None:
-        
-        
-        
+    belief_base: BeliefBase
+
+    def __init__(self, init_beliefs: List[Tuple[str, int]] = []) -> None:
+        if len(init_beliefs) > 0:
+            for belief, priority in init_beliefs:
+                self.belief_base.revise(belief, priority)
+
     def display(self, beliefBase: List[str]) -> None:
         """Display the belief Base"""
-        print("Belief Base")
-        print()
-        print(beliefBase)
-        
-        
-    def ask_action(self) -> Action:
+        self.belief_base.display_belief()
+
+    def ask_action(self):
         """Ask the human for an action."""
         print("What do you want to do ?")
+        
