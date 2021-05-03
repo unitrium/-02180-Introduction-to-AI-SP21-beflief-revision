@@ -21,21 +21,49 @@ class BeliefBase:
     beliefBase: Dict containing the beliefs believed to be true,
     the beliefs are referenced by the formulae entered by the user.
     """
+
+    beliefBaseVariableLimit: int
+
     beliefBase: Dict[Belief]
 
     def __init__(self):
         self.beliefBase = {}
+        beliefBaseVariableLimit = 8
 
     def add(self, sequence):
         # Convert beliefs
-        converted = to_cnf(sequence)
+        belief = Belief(sequence, 0)
+        if is_valid(belief):
+            self.beliefBase[sequence] = belief
 
-        if is_valid(sequence):
-            self.beliefBase[sequence] = converted
 
-    def is_valid(sequence):
         """Check the validity of the input sequence"""
-        return 1
+        if beliefBaseVariableLimit == -1:
+            return true
+        """Check if new variables has been added, if yes, check if still within limit"""
+        variablesInBelief = []
+            char_value = ord(char)
+            if char_value >= 65 and char_value <= 90 or char_value >= 97 and char_value <= 122:
+                if char not in variablesInBelief:
+                    variablesInBelief.append(char)
+        variablesInBase = variables_in_base()
+        for element in variablesInBelief:
+            if element not in variablesInBase:
+                variablesInBase.append(element)
+        if len(variablesInBase) > beliefBaseVariableLimit:
+            return false
+        return True
+
+    def variables_in_base(self) -> int:
+        """Count the variables in the beliefbase"""
+        list = []
+        for belief in self.beliefBase.keys():
+            for char in belief:
+                char_value = ord(char)
+                if char_value >= 65 and char_value <= 90 or char_value >= 97 and char_value <= 122:
+                    if char not in list:
+                        list.append(char)
+        return list
 
     def display_belief(self) -> None:
         for belief in self.beliefBase.keys():
