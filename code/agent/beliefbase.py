@@ -37,11 +37,13 @@ class BeliefBase:
             self.beliefBase[sequence] = belief
 
 
+    def is_valid(self, belief):
         """Check the validity of the input sequence"""
         if beliefBaseVariableLimit == -1:
             return true
         """Check if new variables has been added, if yes, check if still within limit"""
         variablesInBelief = []
+        for char in belief.formula:
             char_value = ord(char)
             if char_value >= 65 and char_value <= 90 or char_value >= 97 and char_value <= 122:
                 if char not in variablesInBelief:
