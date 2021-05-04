@@ -1,4 +1,5 @@
-from code.agent import BeliefBase
+from code.agent.agent import Agent
+from code.agent.beliefbase import BeliefBase
 from sympy.logic.boolalg import to_cnf, And, Or, Not
 
 if __name__ == "__main__":
@@ -8,11 +9,12 @@ if __name__ == "__main__":
         bb.display_belief()
         var = input("Please add to the belief base: ")
 
-        if var.lower() == "quit" :  #   If the input is quit break (adin)
+        if var.lower() == "quit":  # If the input is quit break (adin)
             break
-        try:   #   use sympy to check if the var contains the correct language (adin)
+        # use sympy to check if the var contains the correct language (adin)
+        try:
             result = to_cnf(var)
-            #If this point is reached, try adding.
+            # If this point is reached, try adding.
             bb.add(var)
 
         except:
@@ -26,4 +28,3 @@ if __name__ == "__main__":
         # Entailment
         # check if belief base entails negated belief. If not then add belief to base.
         # If it is entailed then contract beliefs until the negation isn't entailed, then add belief.
-
