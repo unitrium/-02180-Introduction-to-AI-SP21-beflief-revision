@@ -7,6 +7,7 @@ if __name__ == "__main__":
         print('Current belief base:')
         bb.display_belief()
         var = input("Please add to the belief base: ")
+
         if var.lower() == "quit" :  #   If the input is quit break (adin)
             break
         try:   #   use sympy to check if the var contains the correct language (adin)
@@ -22,9 +23,7 @@ if __name__ == "__main__":
         #   if it isn't entailed contract from the belief base then add belief.
         #   There shouldn't be any duplicate beliefs.
 
+        # Entailment
+        # check if belief base entails negated belief. If not then add belief to base.
+        # If it is entailed then contract beliefs until the negation isn't entailed, then add belief.
 
-
-
-        #Entailment
-        #check if belief base entails negated belief. If not then add belief to base.
-        #If it is entailed then contract beliefs until the negation isn't entailed, then add belief.
