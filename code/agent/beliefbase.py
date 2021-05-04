@@ -1,7 +1,6 @@
 """Class for defining the Belief Base"""
 from sympy.logic.boolalg import to_cnf, And, Or, Not
 from typing import Dict
-from .agent import Agent, Action
 
 
 class Belief:
@@ -12,16 +11,16 @@ class Belief:
     def __init__(self, formula: str, priority: int) -> None:
         self.priority = priority
         self.formula = formula
-        self.cnf = to_cnf(formulae)
+        self.cnf = to_cnf(formula)
 
 
 class BeliefBase:
     """The belief base.
     Initially empty
     beliefBase: Dict containing the beliefs believed to be true,
-    the beliefs are referenced by the formulae entered by the user.
+    the beliefs are referenced by the formula entered by the user.
     """
-    beliefBase: Dict[Belief]
+    beliefBase: dict
 
     def __init__(self):
         self.beliefBase = {}
@@ -43,7 +42,8 @@ class BeliefBase:
 
     def revise(self, new_formulae: str, priority: int):
         new_belief = Belief(new_formulae, priority)
-        if self._contract(new_belief):
+        if not self._contract(new_belief):
+            print(f'adding new belief {new_belief}')
             self._expand(new_belief)
 
     def _expand(self, new_belief: Belief):
@@ -56,12 +56,13 @@ class BeliefBase:
         """
         to_remove = []
         incompatibility = False
-        for key, belief in enumerate(self.beliefBase):
+        for key, belief in self.beliefBase.items():
             if And(belief.cnf, Not(new_belief.cnf)):
                 if belief.priority < new_belief.priority:
                     to_remove.append(key)
                 else:
                     incompatibility = True
         for key in to_remove:
+            print(f'Pop {key}')
             self.beliefBase.pop(key)
         return incompatibility

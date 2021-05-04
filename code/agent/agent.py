@@ -7,9 +7,11 @@ class Agent:
     belief_base: BeliefBase
 
     def __init__(self, init_beliefs: List[Tuple[str, int]] = []) -> None:
+        self.belief_base = BeliefBase()
         if len(init_beliefs) > 0:
             for belief, priority in init_beliefs:
                 self.belief_base.revise(belief, priority)
+        print(self.belief_base.beliefBase.keys())
 
     def display(self, beliefBase: List[str]) -> None:
         """Display the belief Base"""
@@ -18,4 +20,3 @@ class Agent:
     def ask_action(self):
         """Ask the human for an action."""
         print("What do you want to do ?")
-        
