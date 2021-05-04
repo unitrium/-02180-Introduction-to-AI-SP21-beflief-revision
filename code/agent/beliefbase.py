@@ -33,7 +33,6 @@ class BeliefBase:
         if is_valid(belief):
             self.beliefBase[sequence] = belief
 
-
     def is_valid(self, belief):
         """Check the validity of the input sequence"""
         if beliefBaseVariableLimit == -1:
@@ -85,7 +84,7 @@ class BeliefBase:
         to_remove = []
         incompatibility = False
         for key, belief in self.beliefBase.items():
-            if And(belief.cnf, Not(new_belief.cnf)):
+            if Or(Not(belief.cnf), Not(new_belief.cnf)):
                 if belief.priority < new_belief.priority:
                     to_remove.append(key)
                 else:
