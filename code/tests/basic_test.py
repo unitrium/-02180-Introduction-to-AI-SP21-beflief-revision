@@ -1,6 +1,5 @@
 import pytest
-from ..agent.agent import Agent
-from ..agent.beliefbase import BeliefBase
+from agent.agent import Agent
 
 
 def test_basic_create():
