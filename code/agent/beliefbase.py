@@ -117,13 +117,13 @@ class BeliefBase:
                     result = removeall(i, disci) + removeall(j, discj)
                     result = unique(result)
 
-                    assresult = associate(result, Or)
+                    assresult = self.associate(result, Or)
 
                     clauses.append(assresult)
 
         return resclauses
 
-    def dissociate(clause, operator) -> list:
+    def dissociate(self, clause, operator) -> list:
         """Return a and b separately according to
         the operator when the input is a & b or a | b"""
 
@@ -131,7 +131,7 @@ class BeliefBase:
 
         return disclause
 
-    def associate(clause, operator):
+    def associate(self, clause, operator):
         """According to the input operator return a & b or a | b"""
 
         assclause = []
