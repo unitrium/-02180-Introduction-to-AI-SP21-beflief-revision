@@ -1,5 +1,5 @@
-from code.agent.agent import Agent
-from code.agent.beliefbase import BeliefBase
+from code.agent import Agent
+from code.agent import BeliefBase
 from sympy.logic.boolalg import to_cnf, And, Or, Not
 
 if __name__ == "__main__":
