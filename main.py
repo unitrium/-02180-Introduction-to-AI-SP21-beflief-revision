@@ -1,5 +1,5 @@
-from code.agent.agent import Agent
-from code.agent.beliefbase import BeliefBase
+from code.agent import Agent
+from code.agent import BeliefBase
 from sympy.logic.boolalg import to_cnf, And, Or, Not
 
 if __name__ == "__main__":
@@ -27,4 +27,21 @@ if __name__ == "__main__":
 
         # Entailment
         # check if belief base entails negated belief. If not then add belief to base.
+        
+        #contraction
+            # remove different beliefs until belief base doesn't contratct -> do a graph search.
+            # add the belief to every possible outcome 
+        
         # If it is entailed then contract beliefs until the negation isn't entailed, then add belief.
+
+
+    # REVISED function
+        # check if new belief contradicts belief base
+            #if it does then 
+            # remove different beliefs until belief base doesn't contradict -> do a graph search.
+            # add the belief to every possible outcome 
+                # choose the outcome that is most plausable and that removes the least beliefs.
+            
+            #if it doesn't then just add new belief
+    
+    

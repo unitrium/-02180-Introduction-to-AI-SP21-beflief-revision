@@ -25,17 +25,17 @@ class BeliefBase:
 
     def __init__(self):
         self.beliefBase = {}
-        beliefBaseVariableLimit = 8
+        self.beliefBaseVariableLimit = 8
 
     def add(self, sequence):
         # Convert beliefs
         belief = Belief(sequence, 0)
-        if is_valid(belief):
+        if self.is_valid(belief):
             self.beliefBase[sequence] = belief
 
     def is_valid(self, belief):
         """Check the validity of the input sequence"""
-        if beliefBaseVariableLimit == -1:
+        if self.beliefBaseVariableLimit == -1:
             return true
         """Check if new variables has been added, if yes, check if still within limit"""
         variablesInBelief = []
@@ -44,15 +44,15 @@ class BeliefBase:
             if char_value >= 65 and char_value <= 90 or char_value >= 97 and char_value <= 122:
                 if char not in variablesInBelief:
                     variablesInBelief.append(char)
-        variablesInBase = variables_in_base()
+        variablesInBase = self.variables_in_base()
         for element in variablesInBelief:
             if element not in variablesInBase:
                 variablesInBase.append(element)
-        if len(variablesInBase) > beliefBaseVariableLimit:
-            return false
+        if len(variablesInBase) > self.beliefBaseVariableLimit:
+            return False
         return True
 
-    def variables_in_base(self) -> int:
+    def variables_in_base(self):
         """Count the variables in the beliefbase"""
         list = []
         for belief in self.beliefBase.keys():
