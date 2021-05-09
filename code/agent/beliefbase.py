@@ -1,6 +1,7 @@
 """Class for defining the Belief Base"""
 from sympy.logic.boolalg import to_cnf, And, Or, Not
-from typing import Dict
+from typing import Dict, List
+from copy import deepcopy
 
 
 class Belief:
@@ -78,21 +79,24 @@ class BeliefBase:
 
     def _contract(self, new_belief: Belief) -> bool:
         """Contracts the belief base. It is assumed that the new belief is not a tautology.
-        Returns a boolean on wether the new belief is compatible with existing beliefs
-        given the priority.
+        Does a graph search to remove all the beliefs until it doesn't contradict anymore.
         """
-        to_remove = []
-        incompatibility = False
-        for key, belief in self.beliefBase.items():
-            if Or(Not(belief.cnf), Not(new_belief.cnf)):
-                if belief.priority < new_belief.priority:
-                    to_remove.append(key)
-                else:
-                    incompatibility = True
-        for key in to_remove:
-            print(f'Pop {key}')
-            self.beliefBase.pop(key)
-        return incompatibility
+        beliefBase = deepcopy(self.beliefBase)
+        contradiction = True
+        queue = [beliefBase]
+        index = 0
+        while contradiction:
+            to_remove = []
+            contradiction = False
+            for belief in queue[index]:
+                if Or(Not(belief.cnf), Not(new_belief.cnf)):
+                    new_state = deepcopy(beliefBase)
+                    new_state.beliefBase.pop(belief.formula)
+                    queue.append(new_state)
+                    contradiction = True
+            if contradiction:
+                index += 1
+        self.beliefBase = queue[index]
 
     def resolution(self, alpha: Belief) -> bool:
         """Resolution Algorithm for propositional logic.
