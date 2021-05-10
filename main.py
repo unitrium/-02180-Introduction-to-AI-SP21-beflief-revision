@@ -12,6 +12,9 @@ if __name__ == "__main__":
         if var.lower() == "quit":  # If the input is quit break (adin)
             break
         # use sympy to check if the var contains the correct language (adin)
+        if var.lower() == "r":
+            alpha = input("Please add alpha: ")
+            bb.resolution(alpha)
         try:
             result = to_cnf(var)
             # If this point is reached, try adding.

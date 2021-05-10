@@ -94,3 +94,96 @@ class BeliefBase:
             print(f'Pop {key}')
             self.beliefBase.pop(key)
         return incompatibility
+
+
+    def resolution(self, alpha: Belief) -> bool:
+        """Resolution Algorithm for propositional logic.
+        Figure 7.12 in the book
+        """
+
+        clauses = [] # Clauses is the set of clauses in the CNF representation of KB A !alpha
+        # Formalisaiton of KB as CNF
+        for kb in self.beliefBase.keys():
+            print("kb = " + kb)
+            print(self.dissociate(kb, "&"))
+            for disskb in self.dissociate(kb, "&"):
+                clauses.append(disskb)
+
+        #print(clauses) 
+        # Add CNF of the contradiction of alpha
+        alpha_temp = to_cnf(alpha)
+        alpha = to_cnf(~alpha_temp)
+        for dissalpha in self.dissociate(str(alpha), "&"):
+            clauses.append(dissalpha)
+        print("clauses = ")
+        print(clauses)
+
+        if False in clauses:
+            return True
+
+        new = set()
+        while True:
+            n = len(clauses)
+            pairs = [(clauses[i], clauses[j])
+                     for i in range(n) for j in range(i+1, n)]
+
+            for ci, cj in pairs:
+                res = self.resolve(ci, cj)
+                if False in res:
+                    # Empty clause
+                    return True
+                new = new.union(set(res))
+
+            if new.issubset(set(clauses)):
+                return False
+
+            for c in new:
+                if c not in clauses:
+                    clauses = clauses.append(new)
+
+    def resolve(self, ci, cj) -> list:
+        """Returns the set of all possible clauses
+        obtained by resolving its two inputs ci and cj"""
+
+        resclauses = []
+
+        disci = self.dissociate(str(ci), "|")
+        discj = self.dissociate(str(cj), "|")
+        """print("----------")
+        print(disci)
+        print("*****")
+        print(discj)
+        print("----------")
+        """
+        for i in disci:
+            for j in discj:
+                print("i = " +i)
+                print("j = " +j)
+                if i == ~j or ~i == j:
+                    result = removeall(i, disci) + removeall(j, discj)
+                    result = unique(result)
+                    print("****")
+                    print(result)
+
+                    assresult = self.associate(str(result), "|")
+
+                    resclauses.append(assresult)
+        print(resclauses)
+        return resclauses
+
+    def dissociate(self, clause, operator) -> list:
+        """Return a and b separately according to
+        the operator when the input is a & b or a | b"""
+
+        disclause = clause.split(operator)
+        return disclause
+
+    def associate(self, clause, operator):
+        """According to the input operator return a & b or a | b"""
+
+        assclause = clause[0]
+        for r in range(1,len(clause)):
+            assclause += "|"
+            assclause += clause[r]
+
+        return assclause
