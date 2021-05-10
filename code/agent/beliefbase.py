@@ -104,20 +104,17 @@ class BeliefBase:
         clauses = [] # Clauses is the set of clauses in the CNF representation of KB A !alpha
         # Formalisaiton of KB as CNF
         for kb in self.beliefBase.keys():
-            print("kb = " + kb)
-            print(self.dissociate(kb, "&"))
-            for disskb in self.dissociate(kb, "&"):
+            for disskb in self.dissociate(str(to_cnf(kb)), " & "):
                 clauses.append(disskb)
-
-        #print(clauses) 
+                
         # Add CNF of the contradiction of alpha
         alpha_temp = to_cnf(alpha)
         alpha = to_cnf(~alpha_temp)
-        for dissalpha in self.dissociate(str(alpha), "&"):
+        for dissalpha in self.dissociate(str(alpha), " & "):
             clauses.append(dissalpha)
-        print("clauses = ")
+            
         print(clauses)
-
+        
         if False in clauses:
             return True
 
@@ -129,17 +126,18 @@ class BeliefBase:
 
             for ci, cj in pairs:
                 res = self.resolve(ci, cj)
-                if False in res:
+                if '' in res:
                     # Empty clause
                     return True
+                
                 new = new.union(set(res))
 
             if new.issubset(set(clauses)):
                 return False
-
+            
             for c in new:
                 if c not in clauses:
-                    clauses = clauses.append(new)
+                    clauses.append(str(c))
 
     def resolve(self, ci, cj) -> list:
         """Returns the set of all possible clauses
@@ -147,27 +145,27 @@ class BeliefBase:
 
         resclauses = []
 
-        disci = self.dissociate(str(ci), "|")
-        discj = self.dissociate(str(cj), "|")
-        """print("----------")
+        disci = self.dissociate(str(ci), " | ")
+        discj = self.dissociate(str(cj), " | ")
+        print("----------")
         print(disci)
         print("*****")
         print(discj)
         print("----------")
-        """
+        
         for i in disci:
             for j in discj:
-                print("i = " +i)
-                print("j = " +j)
-                if i == ~j or ~i == j:
-                    result = removeall(i, disci) + removeall(j, discj)
-                    result = unique(result)
-                    print("****")
-                    print(result)
-
-                    assresult = self.associate(str(result), "|")
-
+                if i == str(Not(j)) or str(Not(i)) == j:
+                    
+                    result = []
+                    for rci in self.removeclause(i,disci):
+                        result.append(rci)
+                    for rcj in self.removeclause(j,discj):
+                        result.append(rcj)
+                    result = list(set(result))
+                    assresult = self.associate(result, " | ")
                     resclauses.append(assresult)
+
         print(resclauses)
         return resclauses
 
@@ -181,9 +179,10 @@ class BeliefBase:
     def associate(self, clause, operator):
         """According to the input operator return a & b or a | b"""
 
-        assclause = clause[0]
-        for r in range(1,len(clause)):
-            assclause += "|"
-            assclause += clause[r]
-
+        assclause = operator.join(clause)
         return assclause
+    
+    def removeclause(self, c, base):
+        
+        return [x for x in base if x != c]
+        

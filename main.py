@@ -12,16 +12,17 @@ if __name__ == "__main__":
         if var.lower() == "quit":  # If the input is quit break (adin)
             break
         # use sympy to check if the var contains the correct language (adin)
-        if var.lower() == "r":
+        if var.lower() == "res":
             alpha = input("Please add alpha: ")
-            bb.resolution(alpha)
-        try:
-            result = to_cnf(var)
-            # If this point is reached, try adding.
-            bb.add(var)
+            print(bb.resolution(alpha))
+        else :
+            try:
+                result = to_cnf(var)
+                # If this point is reached, try adding.
+                bb.add(var)
 
-        except:
-            print("The input is invalid.")
+            except:
+                print("The input is invalid.")
         #   if the language is correct convert the belief base into sympy and do revision.
 
         #   Check entailment with negated belief to check if the belief base contradicts your new belief.
