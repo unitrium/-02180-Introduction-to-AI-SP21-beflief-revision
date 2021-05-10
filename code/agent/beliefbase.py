@@ -105,15 +105,21 @@ class BeliefBase:
         # Formalisaiton of KB as CNF
         for kb in self.beliefBase.keys():
             for disskb in self.dissociate(str(to_cnf(kb)), " & "):
-                clauses.append(disskb)
+                if disskb[0] == "(":
+                    clauses.append(disskb[1:-1])
+                else :
+                    clauses.append(disskb)
                 
         # Add CNF of the contradiction of alpha
         alpha_temp = to_cnf(alpha)
         alpha = to_cnf(~alpha_temp)
         for dissalpha in self.dissociate(str(alpha), " & "):
-            clauses.append(dissalpha)
+            if dissalpha[0] == "(":
+                    clauses.append(dissalpha[1:-1])
+            else :
+                clauses.append(dissalpha)
             
-        print(clauses)
+        #print(clauses)
         
         if False in clauses:
             return True
@@ -147,11 +153,13 @@ class BeliefBase:
 
         disci = self.dissociate(str(ci), " | ")
         discj = self.dissociate(str(cj), " | ")
+        """
         print("----------")
         print(disci)
         print("*****")
         print(discj)
         print("----------")
+        """
         
         for i in disci:
             for j in discj:
@@ -166,7 +174,6 @@ class BeliefBase:
                     assresult = self.associate(result, " | ")
                     resclauses.append(assresult)
 
-        print(resclauses)
         return resclauses
 
     def dissociate(self, clause, operator) -> list:
