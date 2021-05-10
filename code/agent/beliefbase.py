@@ -1,6 +1,7 @@
 """Class for defining the Belief Base"""
 from sympy.logic.boolalg import to_cnf, And, Or, Not
-from typing import Dict
+from typing import Dict, List
+from copy import deepcopy
 
 
 class Belief:
@@ -32,7 +33,6 @@ class BeliefBase:
         belief = Belief(sequence, 0)
         if self.is_valid(belief):
             self.beliefBase[sequence] = belief
-
 
     def is_valid(self, belief):
         """Check the validity of the input sequence"""
@@ -79,18 +79,93 @@ class BeliefBase:
 
     def _contract(self, new_belief: Belief) -> bool:
         """Contracts the belief base. It is assumed that the new belief is not a tautology.
-        Returns a boolean on wether the new belief is compatible with existing beliefs
-        given the priority.
+        Does a graph search to remove all the beliefs until it doesn't contradict anymore.
         """
-        to_remove = []
-        incompatibility = False
-        for key, belief in self.beliefBase.items():
-            if And(belief.cnf, Not(new_belief.cnf)):
-                if belief.priority < new_belief.priority:
-                    to_remove.append(key)
-                else:
-                    incompatibility = True
-        for key in to_remove:
-            print(f'Pop {key}')
-            self.beliefBase.pop(key)
-        return incompatibility
+        beliefBase = deepcopy(self.beliefBase)
+        contradiction = True
+        queue = [beliefBase]
+        index = 0
+        while contradiction:
+            to_remove = []
+            contradiction = False
+            for belief in queue[index]:
+                if Or(Not(belief.cnf), Not(new_belief.cnf)):
+                    new_state = deepcopy(beliefBase)
+                    new_state.beliefBase.pop(belief.formula)
+                    queue.append(new_state)
+                    contradiction = True
+            if contradiction:
+                index += 1
+        self.beliefBase = queue[index]
+
+    def resolution(self, alpha: Belief) -> bool:
+        """Resolution Algorithm for propositional logic.
+        Figure 7.12 in the book
+        """
+
+        clauses = []  # Clauses is the set of clauses in the CNF representation of KB A !alpha
+        # Formalisaiton of KB as CNF
+        for kb in self.beliefBase.keys():
+            clauses.append(self.dissociate(kb, And))
+
+        # Add CNF of the contradiction of alpha
+            clauses.append(self.dissociate(to_cnf(~alpha.cnf), And))
+
+        if False in clauses:
+            return True
+
+        new = set()
+        while True:
+            n = len(clauses)
+            pairs = [(clauses[i], clauses[j])
+                     for i in range(n) for j in range(i+1, n)]
+
+            for ci, cj in pairs:
+                res = self.resolve(ci, cj)
+                if False in res:
+                    # Empty clause
+                    return True
+                new = new.union(set(res))
+
+            if new.issubset(set(clauses)):
+                return False
+
+            for c in new:
+                if c not in clauses:
+                    clauses = clauses.append(new)
+
+    def resolve(self, ci, cj) -> list:
+        """Returns the set of all possible clauses
+        obtained by resolving its two inputs ci and cj"""
+
+        resclauses = []
+
+        disci = self.dissociate(ci, Or)
+        discj = self.dissociate(cj, Or)
+
+        for i in disci:
+            for j in discj:
+                if i == ~j or ~i == j:
+                    result = removeall(i, disci) + removeall(j, discj)
+                    result = unique(result)
+
+                    assresult = self.associate(result, Or)
+
+                    clauses.append(assresult)
+
+        return resclauses
+
+    def dissociate(self, clause, operator) -> list:
+        """Return a and b separately according to
+        the operator when the input is a & b or a | b"""
+
+        disclause = []
+
+        return disclause
+
+    def associate(self, clause, operator):
+        """According to the input operator return a & b or a | b"""
+
+        assclause = []
+
+        return assclause
