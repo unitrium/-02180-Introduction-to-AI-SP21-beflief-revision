@@ -86,7 +86,6 @@ class BeliefBase:
         queue = [beliefBase]
         index = 0
         while contradiction:
-            to_remove = []
             contradiction = False
             for belief in queue[index]:
                 if Or(Not(belief.cnf), Not(new_belief.cnf)):
