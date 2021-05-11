@@ -69,16 +69,18 @@ class BeliefBase:
         for belief in self.beliefBase.keys():
             print(belief)
 
-    def revise(self, new_formulae: str, priority: int):
-        new_belief = Belief(new_formulae, priority)
-        if not self._contract(new_belief):
-            print(f'adding new belief {new_belief}')
-            self._expand(new_belief)
+    def revise(self, new_formula: str):
+        """Function to add a new belief to the belief base with consistency."""
+        new_belief = Belief(new_formula)
+        if self.resolution(new_belief):
+            self.contract(new_belief):
+        print(f'adding new belief {new_belief}')
+        self._expand(new_belief)
 
     def _expand(self, new_belief: Belief):
         self.beliefBase[new_belief.formula] = new_belief
 
-    def _contract(self, new_belief: Belief) -> bool:
+    def contract(self, new_belief: Belief) -> bool:
         """Contracts the belief base. It is assumed that the new belief is not a tautology.
         Does a graph search to remove all the beliefs until it doesn't contradict anymore.
         """
@@ -101,6 +103,7 @@ class BeliefBase:
 
     def resolution(self, alpha: Belief) -> bool:
         """Resolution Algorithm for propositional logic.
+        Check if the belief contradicts the belief base.
         Figure 7.12 in the book
         """
         clauses = []  # Clauses is the set of clauses in the CNF representation of KB A !alpha

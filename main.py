@@ -18,7 +18,7 @@ if __name__ == "__main__":
         if var.lower() == "res":
             alpha = input("Please add alpha: ")
             print(bb.resolution(alpha))
-        else :
+        else:
             try:
                 result = to_cnf(var)
                 # If this point is reached, try adding.
@@ -32,21 +32,4 @@ if __name__ == "__main__":
         #   if it isn't entailed contract from the belief base then add belief.
         #   There shouldn't be any duplicate beliefs.
 
-        # Entailment
-        # check if belief base entails negated belief. If not then add belief to base.
-            
-        #contraction
-            # remove different beliefs until belief base doesn't contratct -> do a graph search.
-            # add the belief to every possible outcome
-
         # If it is entailed then contract beliefs until the negation isn't entailed, then add belief.
-
-
-    # REVISED function
-        # check if new belief contradicts belief base
-            #if it does then
-            # remove different beliefs until belief base doesn't contradict -> do a graph search.
-            # add the belief to every possible outcome
-                # choose the outcome that is most plausable and that removes the least beliefs.
-
-            #if it doesn't then just add new belief
