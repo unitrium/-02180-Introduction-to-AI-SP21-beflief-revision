@@ -1,5 +1,5 @@
 import pytest
-from agent.agent import Agent
+from ..agent.agent import Agent
 
 
 def test_basic_create():
