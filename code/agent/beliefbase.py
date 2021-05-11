@@ -6,11 +6,9 @@ from copy import deepcopy
 
 class Belief:
     cnf: str
-    priority: int
     formula: str
 
-    def __init__(self, formula: str, priority: int) -> None:
-        self.priority = priority
+    def __init__(self, formula: str) -> None:
         self.formula = formula
         self.cnf = to_cnf(formula)
 
@@ -27,6 +25,13 @@ class BeliefBase:
     def __init__(self):
         self.beliefBase = {}
         self.beliefBaseVariableLimit = 8
+
+    def __copy__(self) -> "BeliefBase":
+        """Return a deep copy of the belief base to be used as a new state."""
+        new_bb = BeliefBase()
+        for key, belief in self.beliefBase.items():
+            new_bb[key] = Belief(belief.formula, belief.priority)
+        return new_bb
 
     def add(self, sequence):
         """Add a sequence to the belief base."""
@@ -69,20 +74,22 @@ class BeliefBase:
         for belief in self.beliefBase.keys():
             print(belief)
 
-    def revise(self, new_formulae: str, priority: int):
-        new_belief = Belief(new_formulae, priority)
-        if not self._contract(new_belief):
-            print(f'adding new belief {new_belief}')
-            self._expand(new_belief)
+    def revise(self, new_formula: str):
+        """Function to add a new belief to the belief base with consistency."""
+        new_belief = Belief(new_formula)
+        if self.resolution(new_belief):
+            self.contract(new_belief)
+        print(f'adding new belief {new_belief}')
+        self._expand(new_belief)
 
     def _expand(self, new_belief: Belief):
         self.beliefBase[new_belief.formula] = new_belief
 
-    def _contract(self, new_belief: Belief) -> bool:
+    def contract(self, new_belief: Belief) -> bool:
         """Contracts the belief base. It is assumed that the new belief is not a tautology.
         Does a graph search to remove all the beliefs until it doesn't contradict anymore.
         """
-        beliefBase = deepcopy(self.beliefBase)
+        beliefBase = self.beliefBase.__copy__()
         contradiction = True
         queue = [beliefBase]
         index = 0
@@ -91,7 +98,7 @@ class BeliefBase:
             contradiction = False
             for belief in queue[index]:
                 if Or(Not(belief.cnf), Not(new_belief.cnf)):
-                    new_state = deepcopy(beliefBase)
+                    new_state = beliefBase.__copy__()
                     new_state.beliefBase.pop(belief.formula)
                     queue.append(new_state)
                     contradiction = True
@@ -101,19 +108,19 @@ class BeliefBase:
 
     def resolution(self, alpha: Belief) -> bool:
         """Resolution Algorithm for propositional logic.
+        Check if the belief contradicts the belief base.
         Figure 7.12 in the book
         """
         clauses = []  # Clauses is the set of clauses in the CNF representation of KB A !alpha
-        # Formalisaiton of KB as CNF
-        for kb in self.beliefBase.keys():
-            for disskb in self.dissociate(str(to_cnf(kb)), " & "):
+        for kb in self.beliefBase.values():
+            for disskb in self.dissociate(str(kb.cnf), " & "):
                 if disskb[0] == "(":
                     clauses.append(disskb[1:-1])
                 else:
                     clauses.append(disskb)
 
         # Add CNF of the contradiction of alpha
-        alpha_temp = to_cnf(alpha)
+        alpha_temp = alpha.cnf
         alpha = to_cnf(~alpha_temp)
         for dissalpha in self.dissociate(str(alpha), " & "):
             if dissalpha[0] == "(":
@@ -137,10 +144,7 @@ class BeliefBase:
 
             if new.issubset(set(clauses)):
                 return False
-
-            for c in new:
-                if c not in clauses:
-                    clauses.append(str(c))
+            clauses += [clause for clause in new if clause not in clauses]
 
     def resolve(self, ci, cj) -> list:
         """Returns the set of all possible clauses
@@ -153,28 +157,22 @@ class BeliefBase:
             for j in discj:
                 if i == str(Not(j)) or str(Not(i)) == j:
 
-                    result = []
-                    for rci in self.removeclause(i, disci):
-                        result.append(rci)
-                    for rcj in self.removeclause(j, discj):
-                        result.append(rcj)
+                    result = [rci for rci in self.removeclause(i, disci)]
+                    result += [rcj for rcj in self.removeclause(j, discj)]
                     result = list(set(result))
                     assresult = self.associate(result, " | ")
                     resclauses.append(assresult)
 
         return resclauses
 
-    def dissociate(self, clause, operator) -> list:
+    def dissociate(self, clause: str, operator: str) -> List[str]:
         """Return a and b separately according to
         the operator when the input is a & b or a | b"""
-        disclause = clause.split(operator)
-        return disclause
+        return clause.split(operator)
 
-    def associate(self, clause, operator):
+    def associate(self, clause: List[str], operator: str) -> str:
         """According to the input operator return a & b or a | b"""
-        assclause = operator.join(clause)
-        return assclause
+        return operator.join(clause)
 
     def removeclause(self, c, base):
-
         return [x for x in base if x != c]

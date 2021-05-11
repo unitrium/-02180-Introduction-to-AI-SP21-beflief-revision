@@ -2,8 +2,6 @@
 from typing import List, Tuple
 from sympy import *
 
-
-
 class World:
     probability: int
     world_data: str
@@ -11,6 +9,7 @@ class World:
     def __init__(self, probability: float, world_data: str) -> None:
         self.probability = probability
         self.world_data = world_data
+
 
 class Worlds:
     worlds_list: List[World]
@@ -40,7 +39,9 @@ class Worlds:
 
     def print_worlds(self):
         for element in self.worlds_list:
-            print("Element with probability: "+str(element.probability)+" and data: "+str(element.world_data))
+            print("Element with probability: "+str(element.probability) +
+                  " and data: "+str(element.world_data))
+
 
     def create_worlds(self, collective_beliefs, variables_in_base):
         self.worlds_list = []

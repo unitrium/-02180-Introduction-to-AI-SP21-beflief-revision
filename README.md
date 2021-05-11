@@ -1,1 +1,42 @@
-# -02180-Introduction-to-AI-SP21-beflief-revision
+# 02180 - Introduction to AI - SP21 - BELIEF REVISION ASSIGNMENT
+
+Assignement for the course 02180 Introduction to AI.   
+
+The goal of this assignment is to implement a belief revision agent.
+
+## Description
+
+This code create a belief base. Then you can add beliefs in it, check logical entailment thanks to the resolution algorithm and do contraction, revision and expansion.
+
+## Requirements
+
+Run the following command to install all the requirements:
+```python
+pip install -r requirements.txt
+```
+
+The two main requirements for this code are:
+* python 3.8
+* sympy 1.8
+
+## How to run the code
+
+The following command is used to run the code
+```python
+python main.py
+```
+Then, you will have different possible actions:
+```python
+p #add a belief to the belief base (here you add p)
+clear #clear the belief base
+quit #quit the code
+```
+
+To add a belief you can use the following symbols:
+```python
+~ #NOT ~p
+& #AND p&q
+| #OR p|q
+>> #implies p>>q
+() #Parenthesis to structure the belief p>>(q&r)
+```
