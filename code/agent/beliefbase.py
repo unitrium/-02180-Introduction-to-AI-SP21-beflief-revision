@@ -106,7 +106,7 @@ class BeliefBase:
         """
         clauses = []  # Clauses is the set of clauses in the CNF representation of KB A !alpha
         for kb in self.beliefBase.values():
-            for disskb in self.dissociate(kb.cnf, " & "):
+            for disskb in self.dissociate(str(kb.cnf), " & "):
                 if disskb[0] == "(":
                     clauses.append(disskb[1:-1])
                 else:
