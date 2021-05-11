@@ -11,9 +11,10 @@ class Agent:
         if len(init_beliefs) > 0:
             for belief, priority in init_beliefs:
                 self.belief_base.revise(belief, priority)
-        print(self.belief_base.beliefBase.keys())
+        print('Your belief base is:')
+        self.display()
 
-    def display(self, beliefBase: List[str]) -> None:
+    def display(self) -> None:
         """Display the belief Base"""
         self.belief_base.display_belief()
 

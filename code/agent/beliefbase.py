@@ -136,7 +136,7 @@ class BeliefBase:
 
             if new.issubset(set(clauses)):
                 return False
-            clauses + = [clause for clause in new if clause not in clauses]
+            clauses += [clause for clause in new if clause not in clauses]
 
     def resolve(self, ci, cj) -> list:
         """Returns the set of all possible clauses
