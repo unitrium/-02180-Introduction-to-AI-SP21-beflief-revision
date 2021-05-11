@@ -8,7 +8,7 @@ def test_basic_create():
 
 
 def test_revision():
-    agent = Agent([('p', 1), ('q', 2), ('p>>q', 3)])
+    agent = Agent([('p'), ('q'), ('p>>q')])
     assert len(agent.belief_base.beliefBase.keys()) == 3
     agent.belief_base.revise('~q', 1)
     assert len(agent.belief_base.beliefBase) == 2
