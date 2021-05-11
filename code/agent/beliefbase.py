@@ -29,7 +29,7 @@ class BeliefBase:
         self.beliefBaseVariableLimit = 8
 
     def add(self, sequence):
-        # Convert beliefs
+        """Add a sequence to the belief base."""
         belief = Belief(sequence, 0)
         if self.is_valid(belief):
             self.beliefBase[sequence] = belief
@@ -39,10 +39,9 @@ class BeliefBase:
         self.beliefBase = {}
 
     def is_valid(self, belief):
-        """Check the validity of the input sequence"""
-        if self.beliefBaseVariableLimit == -1:
-            return true
         """Check if new variables has been added, if yes, check if still within limit"""
+        if self.beliefBaseVariableLimit == -1:
+            return True
         variablesInBelief = []
         for char in belief.formula:
             char_value = ord(char)
@@ -50,23 +49,21 @@ class BeliefBase:
                 if char not in variablesInBelief:
                     variablesInBelief.append(char)
         variablesInBase = self.variables_in_base()
-        for element in variablesInBelief:
-            if element not in variablesInBase:
-                variablesInBase.append(element)
+        variablesInBase += [var for var in variablesInBelief if var not in variablesInBase]
         if len(variablesInBase) > self.beliefBaseVariableLimit:
             return False
         return True
 
     def variables_in_base(self):
         """Count the variables in the beliefbase"""
-        list = []
+        variables = []
         for belief in self.beliefBase.keys():
             for char in belief:
-                char_value = ord(char)
-                if char_value >= 65 and char_value <= 90 or char_value >= 97 and char_value <= 122:
-                    if char not in list:
-                        list.append(char)
-        return list
+                if char not in variables:
+                    char_value = ord(char)
+                    if char_value >= 65 and char_value <= 90 or char_value >= 97 and char_value <= 122:
+                        variables.append(char)
+        return variables
 
     def display_belief(self) -> None:
         for belief in self.beliefBase.keys():
