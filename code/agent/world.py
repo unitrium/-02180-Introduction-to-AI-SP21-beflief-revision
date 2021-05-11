@@ -2,8 +2,6 @@
 from typing import List, Tuple
 
 
-
-
 class World:
     probability: int
     world_data: str
@@ -11,6 +9,7 @@ class World:
     def __init__(self, probability: float, world_data: str) -> None:
         self.probability = probability
         self.world_data = world_data
+
 
 class Worlds:
     worlds_list: List[World]
@@ -40,7 +39,9 @@ class Worlds:
 
     def print_worlds(self):
         for element in self.worlds_list:
-            print("Element with probability: "+str(element.probability)+" and data: "+str(element.world_data))
+            print("Element with probability: "+str(element.probability) +
+                  " and data: "+str(element.world_data))
+
 
 test = Worlds()
 test.add_to_head(World(3, ""))
@@ -56,6 +57,6 @@ print("")
 test.sort_worlds()
 test.print_worlds()
 print("")
-test.add_to_tail(World(100,"haha"))
-test.add_to_head(World(100,"hihi"))
+test.add_to_tail(World(100, "haha"))
+test.add_to_head(World(100, "hihi"))
 test.print_worlds()
