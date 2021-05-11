@@ -6,11 +6,9 @@ from copy import deepcopy
 
 class Belief:
     cnf: str
-    priority: int
     formula: str
 
-    def __init__(self, formula: str, priority: int) -> None:
-        self.priority = priority
+    def __init__(self, formula: str) -> None:
         self.formula = formula
         self.cnf = to_cnf(formula)
 
@@ -73,7 +71,7 @@ class BeliefBase:
         """Function to add a new belief to the belief base with consistency."""
         new_belief = Belief(new_formula)
         if self.resolution(new_belief):
-            self.contract(new_belief):
+            self.contract(new_belief)
         print(f'adding new belief {new_belief}')
         self._expand(new_belief)
 
