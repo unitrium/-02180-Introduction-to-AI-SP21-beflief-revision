@@ -1,6 +1,7 @@
 """Class for defining the Belief Base"""
 from sympy.logic.boolalg import to_cnf, And, Or, Not
-from typing import Dict
+from typing import Dict, List
+from copy import deepcopy
 
 
 class Belief:
@@ -28,17 +29,19 @@ class BeliefBase:
         self.beliefBaseVariableLimit = 8
 
     def add(self, sequence):
-        # Convert beliefs
+        """Add a sequence to the belief base."""
         belief = Belief(sequence, 0)
         if self.is_valid(belief):
             self.beliefBase[sequence] = belief
 
+    def clear(self):
+        """Clears the belief base."""
+        self.beliefBase = {}
 
     def is_valid(self, belief):
-        """Check the validity of the input sequence"""
-        if self.beliefBaseVariableLimit == -1:
-            return true
         """Check if new variables has been added, if yes, check if still within limit"""
+        if self.beliefBaseVariableLimit == -1:
+            return True
         variablesInBelief = []
         for char in belief.formula:
             char_value = ord(char)
@@ -46,23 +49,21 @@ class BeliefBase:
                 if char not in variablesInBelief:
                     variablesInBelief.append(char)
         variablesInBase = self.variables_in_base()
-        for element in variablesInBelief:
-            if element not in variablesInBase:
-                variablesInBase.append(element)
+        variablesInBase += [var for var in variablesInBelief if var not in variablesInBase]
         if len(variablesInBase) > self.beliefBaseVariableLimit:
             return False
         return True
 
     def variables_in_base(self):
         """Count the variables in the beliefbase"""
-        list = []
+        variables = []
         for belief in self.beliefBase.keys():
             for char in belief:
-                char_value = ord(char)
-                if char_value >= 65 and char_value <= 90 or char_value >= 97 and char_value <= 122:
-                    if char not in list:
-                        list.append(char)
-        return list
+                if char not in variables:
+                    char_value = ord(char)
+                    if char_value >= 65 and char_value <= 90 or char_value >= 97 and char_value <= 122:
+                        variables.append(char)
+        return variables
 
     def display_belief(self) -> None:
         for belief in self.beliefBase.keys():
@@ -79,28 +80,29 @@ class BeliefBase:
 
     def _contract(self, new_belief: Belief) -> bool:
         """Contracts the belief base. It is assumed that the new belief is not a tautology.
-        Returns a boolean on wether the new belief is compatible with existing beliefs
-        given the priority.
+        Does a graph search to remove all the beliefs until it doesn't contradict anymore.
         """
-        to_remove = []
-        incompatibility = False
-        for key, belief in self.beliefBase.items():
-            if And(belief.cnf, Not(new_belief.cnf)):
-                if belief.priority < new_belief.priority:
-                    to_remove.append(key)
-                else:
-                    incompatibility = True
-        for key in to_remove:
-            print(f'Pop {key}')
-            self.beliefBase.pop(key)
-        return incompatibility
-
+        beliefBase = deepcopy(self.beliefBase)
+        contradiction = True
+        queue = [beliefBase]
+        index = 0
+        while contradiction:
+            to_remove = []
+            contradiction = False
+            for belief in queue[index]:
+                if Or(Not(belief.cnf), Not(new_belief.cnf)):
+                    new_state = deepcopy(beliefBase)
+                    new_state.beliefBase.pop(belief.formula)
+                    queue.append(new_state)
+                    contradiction = True
+            if contradiction:
+                index += 1
+        self.beliefBase = queue[index]
 
     def resolution(self, alpha: Belief) -> bool:
         """Resolution Algorithm for propositional logic.
         Figure 7.12 in the book
         """
-
         clauses = [] # Clauses is the set of clauses in the CNF representation of KB A !alpha
         # Formalisaiton of KB as CNF
         for kb in self.beliefBase.keys():
@@ -118,9 +120,13 @@ class BeliefBase:
                     clauses.append(dissalpha[1:-1])
             else :
                 clauses.append(dissalpha)
-            
-        #print(clauses)
-        
+        clauses = []  # Clauses is the set of clauses in the CNF representation of KB A !alpha
+        # Formalisaiton of KB as CNF
+        for kb in self.beliefBase.keys():
+            clauses.append(self.dissociate(kb, And))
+
+        # Add CNF of the contradiction of alpha
+            clauses.append(self.dissociate(to_cnf(~alpha.cnf), And))
         if False in clauses:
             return True
 
@@ -150,17 +156,8 @@ class BeliefBase:
         obtained by resolving its two inputs ci and cj"""
 
         resclauses = []
-
         disci = self.dissociate(str(ci), " | ")
         discj = self.dissociate(str(cj), " | ")
-        """
-        print("----------")
-        print(disci)
-        print("*****")
-        print(discj)
-        print("----------")
-        """
-        
         for i in disci:
             for j in discj:
                 if i == str(Not(j)) or str(Not(i)) == j:
@@ -179,17 +176,14 @@ class BeliefBase:
     def dissociate(self, clause, operator) -> list:
         """Return a and b separately according to
         the operator when the input is a & b or a | b"""
-
         disclause = clause.split(operator)
         return disclause
 
     def associate(self, clause, operator):
         """According to the input operator return a & b or a | b"""
-
         assclause = operator.join(clause)
         return assclause
     
     def removeclause(self, c, base):
         
         return [x for x in base if x != c]
-        
