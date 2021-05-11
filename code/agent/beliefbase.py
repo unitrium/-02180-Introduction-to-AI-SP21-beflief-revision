@@ -104,16 +104,15 @@ class BeliefBase:
         Figure 7.12 in the book
         """
         clauses = []  # Clauses is the set of clauses in the CNF representation of KB A !alpha
-        # Formalisaiton of KB as CNF
-        for kb in self.beliefBase.keys():
-            for disskb in self.dissociate(str(to_cnf(kb)), " & "):
+        for kb in self.beliefBase.values():
+            for disskb in self.dissociate(kb.cnf, " & "):
                 if disskb[0] == "(":
                     clauses.append(disskb[1:-1])
                 else:
                     clauses.append(disskb)
 
         # Add CNF of the contradiction of alpha
-        alpha_temp = to_cnf(alpha)
+        alpha_temp = alpha.cnf
         alpha = to_cnf(~alpha_temp)
         for dissalpha in self.dissociate(str(alpha), " & "):
             if dissalpha[0] == "(":
@@ -137,10 +136,7 @@ class BeliefBase:
 
             if new.issubset(set(clauses)):
                 return False
-
-            for c in new:
-                if c not in clauses:
-                    clauses.append(str(c))
+            clauses + = [clause for clause in new if clause not in clauses]
 
     def resolve(self, ci, cj) -> list:
         """Returns the set of all possible clauses
@@ -153,11 +149,8 @@ class BeliefBase:
             for j in discj:
                 if i == str(Not(j)) or str(Not(i)) == j:
 
-                    result = []
-                    for rci in self.removeclause(i, disci):
-                        result.append(rci)
-                    for rcj in self.removeclause(j, discj):
-                        result.append(rcj)
+                    result = [rci for rci in self.removeclause(i, disci)]
+                    result += [rcj for rcj in self.removeclause(j, discj)]
                     result = list(set(result))
                     assresult = self.associate(result, " | ")
                     resclauses.append(assresult)
@@ -167,14 +160,11 @@ class BeliefBase:
     def dissociate(self, clause, operator) -> list:
         """Return a and b separately according to
         the operator when the input is a & b or a | b"""
-        disclause = clause.split(operator)
-        return disclause
+        return clause.split(operator)
 
     def associate(self, clause, operator):
         """According to the input operator return a & b or a | b"""
-        assclause = operator.join(clause)
-        return assclause
+        return operator.join(clause)
 
     def removeclause(self, c, base):
-
         return [x for x in base if x != c]
