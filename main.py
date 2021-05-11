@@ -11,6 +11,9 @@ if __name__ == "__main__":
 
         if var.lower() == "quit":  # If the input is quit break (adin)
             break
+        elif var.lower() == "clear":
+            bb.clear()
+            continue
         # use sympy to check if the var contains the correct language (adin)
         try:
             result = to_cnf(var)
@@ -27,21 +30,19 @@ if __name__ == "__main__":
 
         # Entailment
         # check if belief base entails negated belief. If not then add belief to base.
-        
+            
         #contraction
             # remove different beliefs until belief base doesn't contratct -> do a graph search.
-            # add the belief to every possible outcome 
-        
+            # add the belief to every possible outcome
+
         # If it is entailed then contract beliefs until the negation isn't entailed, then add belief.
 
 
     # REVISED function
         # check if new belief contradicts belief base
-            #if it does then 
+            #if it does then
             # remove different beliefs until belief base doesn't contradict -> do a graph search.
-            # add the belief to every possible outcome 
+            # add the belief to every possible outcome
                 # choose the outcome that is most plausable and that removes the least beliefs.
-            
+
             #if it doesn't then just add new belief
-    
-    
