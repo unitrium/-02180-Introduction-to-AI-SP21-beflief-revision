@@ -103,32 +103,23 @@ class BeliefBase:
         """Resolution Algorithm for propositional logic.
         Figure 7.12 in the book
         """
-        clauses = [] # Clauses is the set of clauses in the CNF representation of KB A !alpha
+        clauses = []  # Clauses is the set of clauses in the CNF representation of KB A !alpha
         # Formalisaiton of KB as CNF
         for kb in self.beliefBase.keys():
             for disskb in self.dissociate(str(to_cnf(kb)), " & "):
                 if disskb[0] == "(":
                     clauses.append(disskb[1:-1])
-                else :
+                else:
                     clauses.append(disskb)
-                
+
         # Add CNF of the contradiction of alpha
         alpha_temp = to_cnf(alpha)
         alpha = to_cnf(~alpha_temp)
         for dissalpha in self.dissociate(str(alpha), " & "):
             if dissalpha[0] == "(":
-                    clauses.append(dissalpha[1:-1])
-            else :
+                clauses.append(dissalpha[1:-1])
+            else:
                 clauses.append(dissalpha)
-        clauses = []  # Clauses is the set of clauses in the CNF representation of KB A !alpha
-        # Formalisaiton of KB as CNF
-        for kb in self.beliefBase.keys():
-            clauses.append(self.dissociate(kb, And))
-
-        # Add CNF of the contradiction of alpha
-            clauses.append(self.dissociate(to_cnf(~alpha.cnf), And))
-        if False in clauses:
-            return True
 
         new = set()
         while True:
@@ -141,12 +132,12 @@ class BeliefBase:
                 if '' in res:
                     # Empty clause
                     return True
-                
+
                 new = new.union(set(res))
 
             if new.issubset(set(clauses)):
                 return False
-            
+
             for c in new:
                 if c not in clauses:
                     clauses.append(str(c))
@@ -161,11 +152,11 @@ class BeliefBase:
         for i in disci:
             for j in discj:
                 if i == str(Not(j)) or str(Not(i)) == j:
-                    
+
                     result = []
-                    for rci in self.removeclause(i,disci):
+                    for rci in self.removeclause(i, disci):
                         result.append(rci)
-                    for rcj in self.removeclause(j,discj):
+                    for rcj in self.removeclause(j, discj):
                         result.append(rcj)
                     result = list(set(result))
                     assresult = self.associate(result, " | ")
@@ -183,7 +174,7 @@ class BeliefBase:
         """According to the input operator return a & b or a | b"""
         assclause = operator.join(clause)
         return assclause
-    
+
     def removeclause(self, c, base):
-        
+
         return [x for x in base if x != c]
