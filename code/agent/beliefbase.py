@@ -157,12 +157,12 @@ class BeliefBase:
 
         return resclauses
 
-    def dissociate(self, clause, operator) -> list:
+    def dissociate(self, clause: str, operator: str) -> List[str]:
         """Return a and b separately according to
         the operator when the input is a & b or a | b"""
         return clause.split(operator)
 
-    def associate(self, clause, operator):
+    def associate(self, clause: List[str], operator: str) -> str:
         """According to the input operator return a & b or a | b"""
         return operator.join(clause)
 
