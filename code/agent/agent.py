@@ -5,8 +5,10 @@ from .beliefbase import BeliefBase
 
 class Agent:
     belief_base: BeliefBase
+    quit: bool
 
     def __init__(self, init_beliefs: List[Tuple[str, int]] = []) -> None:
+        self.quit = False
         self.belief_base = BeliefBase()
         if len(init_beliefs) > 0:
             for belief, priority in init_beliefs:
@@ -33,3 +35,7 @@ class Agent:
             self.display()
         elif action == 'clear':
             self.belief_base.clear()
+        elif action == 'quit':
+            self.quit = True
+        else:
+            print('Unrecognized action.')
