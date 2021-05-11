@@ -34,6 +34,10 @@ class BeliefBase:
         if self.is_valid(belief):
             self.beliefBase[sequence] = belief
 
+    def clear(self):
+        """Clears the belief base."""
+        self.beliefBase = {}
+
     def is_valid(self, belief):
         """Check the validity of the input sequence"""
         if self.beliefBaseVariableLimit == -1:
