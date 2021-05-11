@@ -77,7 +77,7 @@ class BeliefBase:
     def _expand(self, new_belief: Belief):
         self.beliefBase[new_belief.formula] = new_belief
 
-    def _contract(self, new_belief: Belief) -> bool:
+    def _contract(self, new_belief: Belief):
         """Contracts the belief base. It is assumed that the new belief is not a tautology.
         Does a graph search to remove all the beliefs until it doesn't contradict anymore.
         """
