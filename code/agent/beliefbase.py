@@ -26,6 +26,13 @@ class BeliefBase:
         self.beliefBase = {}
         self.beliefBaseVariableLimit = 8
 
+    def __copy__(self) -> "BeliefBase":
+        """Return a deep copy of the belief base to be used as a new state."""
+        new_bb = BeliefBase()
+        for key, belief in self.beliefBase.items():
+            new_bb[key] = Belief(belief.formula, belief.priority)
+        return new_bb
+
     def add(self, sequence):
         """Add a sequence to the belief base."""
         belief = Belief(sequence, 0)
@@ -82,7 +89,7 @@ class BeliefBase:
         """Contracts the belief base. It is assumed that the new belief is not a tautology.
         Does a graph search to remove all the beliefs until it doesn't contradict anymore.
         """
-        beliefBase = deepcopy(self.beliefBase)
+        beliefBase = self.beliefBase.__copy__()
         contradiction = True
         queue = [beliefBase]
         index = 0
@@ -91,7 +98,7 @@ class BeliefBase:
             contradiction = False
             for belief in queue[index]:
                 if Or(Not(belief.cnf), Not(new_belief.cnf)):
-                    new_state = deepcopy(beliefBase)
+                    new_state = beliefBase.__copy__()
                     new_state.beliefBase.pop(belief.formula)
                     queue.append(new_state)
                     contradiction = True
