@@ -2,6 +2,7 @@ import pytest
 from ..agent.agent import Agent
 from ..agent.world import World, Worlds
 
+
 def test_basic_create():
     # Some basic creation of the system, not implemented yet, so cant directly call
     agent = Agent()
@@ -10,7 +11,7 @@ def test_basic_create():
 def test_revision():
     agent = Agent([('p'), ('q'), ('p>>q')])
     assert len(agent.belief_base.beliefBase.keys()) == 3
-    agent.belief_base.revise('~q', 1)
+    agent.belief_base.revise('~q')
     assert len(agent.belief_base.beliefBase) == 2
 
 
@@ -37,6 +38,7 @@ def test_contraction_extensionality():
 def test_contraction_recovery():
     pass
 
+
 def test_worlds():
     test = Worlds()
     test.add_to_head(World(3, ""))
@@ -52,11 +54,12 @@ def test_worlds():
     test.sort_worlds()
     test.print_worlds()
     print("")
-    test.add_to_tail(World(100,"haha"))
-    test.add_to_head(World(100,"hihi"))
+    test.add_to_tail(World(100, "haha"))
+    test.add_to_head(World(100, "hihi"))
     test.print_worlds()
     test.create_worlds("p&p>>q|t", ["p", "q", "t"])
     test.print_worlds()
     pass
+
 
 test_worlds()
