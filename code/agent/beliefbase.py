@@ -30,7 +30,7 @@ class BeliefBase:
         """Return a deep copy of the belief base to be used as a new state."""
         new_bb = BeliefBase()
         for key, belief in self.beliefBase.items():
-            new_bb[key] = Belief(belief.formula, belief.priority)
+            new_bb.beliefBase[key] = Belief(belief.formula)
         return new_bb
 
     def add(self, sequence):
@@ -89,14 +89,17 @@ class BeliefBase:
         """Contracts the belief base. It is assumed that the new belief is not a tautology.
         Does a graph search to remove all the beliefs until it doesn't contradict anymore.
         """
-        beliefBase = self.beliefBase.__copy__()
+        beliefBase = self.__copy__()
         contradiction = True
         queue = [beliefBase]
         index = 0
         while contradiction:
             to_remove = []
             contradiction = False
-            for belief in queue[index]:
+            for belief in queue[index].beliefBase.values():
+                print(Not(belief.cnf))
+                print(Or(Not(belief.cnf), Not(new_belief.cnf)))
+                print(Not(new_belief.cnf))
                 if Or(Not(belief.cnf), Not(new_belief.cnf)):
                     new_state = beliefBase.__copy__()
                     new_state.beliefBase.pop(belief.formula)
