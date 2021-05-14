@@ -73,8 +73,8 @@ class BeliefBase:
 
     def _collective_beliefs(self) -> str:
         """Concatenates all the beliefs in belief base in their cnf with &."""
-        return '&'.join(
-            [str(belief.cnf) for belief in self.beliefBase.values()])
+        return str(to_cnf('&'.join(
+            [str(belief.cnf) for belief in self.beliefBase.values()]), True))
 
     def _create_worlds(self) -> Worlds:
         worlds = Worlds()
@@ -84,10 +84,7 @@ class BeliefBase:
 
     def get_plausibility(self) -> int:
         collective_beliefs = self._collective_beliefs()
-        print(f'Looking for {collective_beliefs}')
         for index, world in enumerate(self._create_worlds().worlds_list):
-            print(f'World {index}')
-            print(world.world_data)
             if world.world_data == collective_beliefs:
                 return index
 
@@ -140,10 +137,10 @@ class BeliefBase:
                         break
 
         best_plausibility_order = possible_belief_bases[0].get_plausibility()
-        self.beliefBase = possible_belief_bases[0]
+        self.beliefBase = possible_belief_bases[0].beliefBase
         for beliefBase in possible_belief_bases:
             if best_plausibility_order > beliefBase.get_plausibility():
-                self.beliefBase = beliefBase
+                self.beliefBase = beliefBase.beliefBase
 
     def resolution(self, alpha: Belief) -> bool:
         """Resolution Algorithm for propositional logic.
