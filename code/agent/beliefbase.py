@@ -95,9 +95,7 @@ class BeliefBase:
     def revise(self, new_formula: str):
         """Function to add a new belief to the belief base with consistency."""
         new_belief = Belief(new_formula)
-        not_new_belief = Belief(f'~({new_belief.cnf})')
-        if self.resolution(not_new_belief):
-            self.contract(new_belief)
+        self.contract(new_belief)
         print(f'adding new belief {new_belief.formula}')
         self._expand(new_belief)
 
