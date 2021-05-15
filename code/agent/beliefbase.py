@@ -1,16 +1,15 @@
 """Class for defining the Belief Base"""
-from sympy.logic.boolalg import to_cnf, And, Or, Not
-from typing import Dict, List
-from copy import deepcopy
+from sympy.logic.boolalg import to_cnf, Not
+from typing import List
+
+from .world import Worlds
 
 
 class Belief:
     cnf: str
-    priority: int
     formula: str
 
-    def __init__(self, formula: str, priority: int) -> None:
-        self.priority = priority
+    def __init__(self, formula: str) -> None:
         self.formula = formula
         self.cnf = to_cnf(formula)
 
@@ -32,7 +31,7 @@ class BeliefBase:
         """Return a deep copy of the belief base to be used as a new state."""
         new_bb = BeliefBase()
         for key, belief in self.beliefBase.items():
-            new_bb[key] = Belief(belief.formula, belief.priority)
+            new_bb.beliefBase[key] = Belief(belief.formula)
         return new_bb
 
     def add(self, sequence):
@@ -61,8 +60,8 @@ class BeliefBase:
             return False
         return True
 
-    def variables_in_base(self):
-        """Count the variables in the beliefbase"""
+    def variables_in_base(self) -> List[str]:
+        """Lists the variables in the beliefbase"""
         variables = []
         for belief in self.beliefBase.keys():
             for char in belief:
@@ -72,56 +71,91 @@ class BeliefBase:
                         variables.append(char)
         return variables
 
+    def _collective_beliefs(self) -> str:
+        """Concatenates all the beliefs in belief base in their cnf with &."""
+        return str(to_cnf('&'.join(
+            [str(belief.cnf) for belief in self.beliefBase.values()]), True))
+
+    def _create_worlds(self) -> Worlds:
+        worlds = Worlds()
+        worlds.create_worlds(self._collective_beliefs(),
+                             self.variables_in_base())
+        return worlds
+
+    def get_plausibility(self) -> int:
+        collective_beliefs = self._collective_beliefs()
+        for index, world in enumerate(self._create_worlds().worlds_list):
+            if world.world_data == collective_beliefs:
+                return index
+
     def display_belief(self) -> None:
         for belief in self.beliefBase.keys():
             print(belief)
 
-    def revise(self, new_formulae: str, priority: int):
-        new_belief = Belief(new_formulae, priority)
-        if not self._contract(new_belief):
-            print(f'adding new belief {new_belief}')
-            self._expand(new_belief)
+    def revise(self, new_formula: str):
+        """Function to add a new belief to the belief base with consistency."""
+        new_belief = Belief(new_formula)
+        if self.resolution(new_belief):
+            self.contract(new_belief)
+        print(f'adding new belief {new_belief.formula}')
+        self._expand(new_belief)
 
     def _expand(self, new_belief: Belief):
         self.beliefBase[new_belief.formula] = new_belief
 
-    def _contract(self, new_belief: Belief) -> bool:
+    def contract(self, new_belief: Belief) -> bool:
         """Contracts the belief base. It is assumed that the new belief is not a tautology.
         Does a graph search to remove all the beliefs until it doesn't contradict anymore.
         """
-        beliefBase = self.beliefBase.__copy__()
+        beliefBase = self.__copy__()
         contradiction = True
         queue = [beliefBase]
         index = 0
+        not_new_belief = Belief(f'~{new_belief.cnf}')
         while contradiction:
-            to_remove = []
+            possible_belief_bases = []
             contradiction = False
-            for belief in queue[index]:
-                if Or(Not(belief.cnf), Not(new_belief.cnf)):
+            current_belief_base = queue.pop(0)
+            for belief in current_belief_base.beliefBase.values():
+                if self.resolution(not_new_belief):
                     new_state = beliefBase.__copy__()
                     new_state.beliefBase.pop(belief.formula)
                     queue.append(new_state)
                     contradiction = True
+                else:
+                    possible_belief_bases.append(current_belief_base)
+                    break
             if contradiction:
                 index += 1
-        self.beliefBase = queue[index]
+            elif len(queue) > 0:
+                alternative_belief_base = queue.pop(0)
+                while len(alternative_belief_base.beliefBase) == len(possible_belief_bases[0].beliefBase):
+                    possible_belief_bases.append(alternative_belief_base)
+                    if len(queue) > 0:
+                        alternative_belief_base = queue.pop(0)
+                    else:
+                        break
+
+        best_plausibility_order = possible_belief_bases[0].get_plausibility()
+        self.beliefBase = possible_belief_bases[0].beliefBase
+        for beliefBase in possible_belief_bases:
+            if best_plausibility_order > beliefBase.get_plausibility():
+                self.beliefBase = beliefBase.beliefBase
 
     def resolution(self, alpha: Belief) -> bool:
         """Resolution Algorithm for propositional logic.
+        Check if the belief is entailed in the the belief base.
         Figure 7.12 in the book
         """
         clauses = []  # Clauses is the set of clauses in the CNF representation of KB A !alpha
         for kb in self.beliefBase.values():
-            for disskb in self.dissociate(kb.cnf, " & "):
+            for disskb in self.dissociate(str(kb.cnf), " & "):
                 if disskb[0] == "(":
                     clauses.append(disskb[1:-1])
                 else:
                     clauses.append(disskb)
 
-        # Add CNF of the contradiction of alpha
-        alpha_temp = alpha.cnf
-        alpha = to_cnf(~alpha_temp)
-        for dissalpha in self.dissociate(str(alpha), " & "):
+        for dissalpha in self.dissociate(str(alpha.cnf), " & "):
             if dissalpha[0] == "(":
                 clauses.append(dissalpha[1:-1])
             else:

@@ -1,13 +1,11 @@
 """Class for defining the Worlds"""
 from typing import List, Tuple
-
+from sympy import *
 
 class World:
-    probability: int
     world_data: str
 
-    def __init__(self, probability: float, world_data: str) -> None:
-        self.probability = probability
+    def __init__(self, world_data: str) -> None:
         self.world_data = world_data
 
 
@@ -31,32 +29,33 @@ class Worlds:
             return self.worlds_list.pop(0)
         return None
 
-    def sort_worlds(self):
-        self.worlds_list.sort(key=self.sort_function)
-
-    def sort_function(self, element: World):
-        return element.probability
-
     def print_worlds(self):
+        i = 1
         for element in self.worlds_list:
-            print("Element with probability: "+str(element.probability) +
-                  " and data: "+str(element.world_data))
+            print("Element in FIFO queue #: "+str(i)+
+                  " with data: "+str(element.world_data))
+            i += 1
 
+    def create_worlds(self, collective_beliefs, variables_in_base):
+        """Function to create 2^n worlds, with n being the amount of variables_in_base.
+        It creates the worlds_list based on the collective_beliefs argument using simplify."""
+        self.worlds_list = []
+        result = to_cnf(collective_beliefs, True)
+        converted_result = str(result)
 
-test = Worlds()
-test.add_to_head(World(3, ""))
-test.add_to_head(World(4, ""))
-test.add_to_head(World(2, ""))
-test.add_to_head(World(9, ""))
-test.add_to_head(World(1, ""))
-test.print_worlds()
-print("")
-test.rearrange_world(0, 1)
-test.print_worlds()
-print("")
-test.sort_worlds()
-test.print_worlds()
-print("")
-test.add_to_tail(World(100, "haha"))
-test.add_to_head(World(100, "hihi"))
-test.print_worlds()
+        old_variables = variables_in_base[:]
+        variable_length = len(variables_in_base)
+        total_worlds = 2**variable_length
+
+        for i in range(total_worlds):
+            new_world = converted_result
+            for j in range(variable_length):
+                old_variable = variables_in_base[j]
+                if i % 2**(variable_length - j - 1) == 0 and i != 0:
+                    if "~" in variables_in_base[j]:
+                        variables_in_base[j] = variables_in_base[j].replace("~", "")
+                    else:
+                        variables_in_base[j] = "~"+variables_in_base[j]
+                new_world = new_world.replace(old_variables[j], variables_in_base[j])
+            world_object = World(new_world)
+            self.add_to_tail(world_object)
