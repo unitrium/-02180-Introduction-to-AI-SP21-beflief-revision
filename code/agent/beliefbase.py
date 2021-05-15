@@ -152,13 +152,12 @@ class BeliefBase:
                     clauses.append(dissociated_belief[1:-1])
                 else:
                     clauses.append(dissociated_belief)
-
-        for dissalpha in self.dissociate(str(alpha.cnf), " & "):
-            if dissalpha[0] == "(":
-                clauses.append(dissalpha[1:-1])
+        for dissociated_alpha in self.dissociate(str(alpha.cnf), " & "):
+            if dissociated_alpha[0] == "(":
+                clauses.append(dissociated_alpha[1:-1])
             else:
-                clauses.append(dissalpha)
-
+                clauses.append(dissociated_alpha)
+        print(clauses)
         new = set()
         while True:
             n = len(clauses)
