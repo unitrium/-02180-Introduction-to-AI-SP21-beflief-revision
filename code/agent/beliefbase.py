@@ -95,7 +95,7 @@ class BeliefBase:
     def revise(self, new_formula: str):
         """Function to add a new belief to the belief base with consistency."""
         new_belief = Belief(new_formula)
-        not_new_belief = Belief(f'~{new_belief.cnf}')
+        not_new_belief = Belief(f'~({new_belief.cnf})')
         if self.resolution(not_new_belief):
             self.contract(new_belief)
         print(f'adding new belief {new_belief.formula}')
@@ -111,7 +111,7 @@ class BeliefBase:
         beliefBase = self.__copy__()
         contradiction = True
         queue = [beliefBase]
-        not_new_belief = Belief(f'~{new_belief.cnf}')
+        not_new_belief = Belief(f'~({new_belief.cnf})')
         while contradiction:
             possible_belief_bases = []
             contradiction = False
@@ -146,12 +146,12 @@ class BeliefBase:
         Figure 7.12 in the book
         """
         clauses = []  # Clauses is the set of clauses in the CNF representation of KB A !alpha
-        for kb in self.beliefBase.values():
-            for disskb in self.dissociate(str(kb.cnf), " & "):
-                if disskb[0] == "(":
-                    clauses.append(disskb[1:-1])
+        for belief in self.beliefBase.values():
+            for dissociated_belief in self.dissociate(str(belief.cnf), " & "):
+                if dissociated_belief[0] == "(":
+                    clauses.append(dissociated_belief[1:-1])
                 else:
-                    clauses.append(disskb)
+                    clauses.append(dissociated_belief)
 
         for dissalpha in self.dissociate(str(alpha.cnf), " & "):
             if dissalpha[0] == "(":
