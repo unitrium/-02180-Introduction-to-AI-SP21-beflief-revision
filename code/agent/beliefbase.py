@@ -118,6 +118,7 @@ class BeliefBase:
             current_belief_base = queue.pop(0)
             for belief in current_belief_base.beliefBase.values():
                 if current_belief_base.resolution(not_new_belief):
+                    print('contradiction')
                     new_state = beliefBase.__copy__()
                     new_state.beliefBase.pop(belief.formula)
                     queue.append(new_state)
@@ -157,7 +158,6 @@ class BeliefBase:
                 clauses.append(dissociated_alpha[1:-1])
             else:
                 clauses.append(dissociated_alpha)
-        print(clauses)
         new = set()
         while True:
             n = len(clauses)

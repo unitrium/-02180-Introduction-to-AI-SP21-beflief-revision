@@ -17,7 +17,9 @@ def test_revision():
 
 def test_revsion_basic():
     agent = Agent(['p'])
-    agent.belief_base.revise('~p')
+
+    agent.belief_base.resolution()
+    agent.display()
     assert len(agent.belief_base.beliefBase.keys()) == 1
     assert '~p' in agent.belief_base.beliefBase
     assert 'p' not in agent.belief_base.beliefBase
