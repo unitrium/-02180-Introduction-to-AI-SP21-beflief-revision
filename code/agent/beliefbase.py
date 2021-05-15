@@ -95,19 +95,19 @@ class BeliefBase:
     def revise(self, new_formula: str):
         """Function to add a new belief to the belief base with consistency."""
         new_belief = Belief(new_formula)
-        not_new_belief = Belief(f'~({new_belief.cnf})')
-        if self.resolution(not_new_belief):
-            self.contract(new_belief)
+        self.contract(new_belief)
         print(f'adding new belief {new_belief.formula}')
         self._expand(new_belief)
 
     def _expand(self, new_belief: Belief):
         self.beliefBase[new_belief.formula] = new_belief
 
-    def contract(self, new_belief: Belief) -> bool:
+    def contract(self, new_belief: Belief) -> None:
         """Contracts the belief base. It is assumed that the new belief is not a tautology.
         Does a graph search to remove all the beliefs until it doesn't contradict anymore.
         """
+        if len(self.beliefBase.keys()) == 0:
+            return
         beliefBase = self.__copy__()
         contradiction = True
         queue = [beliefBase]
@@ -152,13 +152,12 @@ class BeliefBase:
                     clauses.append(dissociated_belief[1:-1])
                 else:
                     clauses.append(dissociated_belief)
-
-        for dissalpha in self.dissociate(str(alpha.cnf), " & "):
-            if dissalpha[0] == "(":
-                clauses.append(dissalpha[1:-1])
+        for dissociated_alpha in self.dissociate(str(alpha.cnf), " & "):
+            if dissociated_alpha[0] == "(":
+                clauses.append(dissociated_alpha[1:-1])
             else:
-                clauses.append(dissalpha)
-
+                clauses.append(dissociated_alpha)
+        print(clauses)
         new = set()
         while True:
             n = len(clauses)
