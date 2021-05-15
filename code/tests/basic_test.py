@@ -11,9 +11,9 @@ def test_basic_create():
 
 def test_revision():
     agent = Agent([('p'), ('q'), ('p>>q')])
-    assert len(agent.belief_base.beliefBase.keys()) == 3
+    assert len(agent.belief_base.beliefBase.keys()) == 2
     agent.belief_base.revise('~q')
-    assert len(agent.belief_base.beliefBase) == 2
+    assert len(agent.belief_base.beliefBase) == 3
 
 
 #if we try to remove belief from base, none of the beliefs in base will entail the belief after contraction.

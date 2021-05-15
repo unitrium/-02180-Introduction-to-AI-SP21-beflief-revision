@@ -95,7 +95,8 @@ class BeliefBase:
     def revise(self, new_formula: str):
         """Function to add a new belief to the belief base with consistency."""
         new_belief = Belief(new_formula)
-        if self.resolution(new_belief):
+        not_new_belief = Belief(f'~({new_belief.cnf})')
+        if self.resolution(not_new_belief):
             self.contract(new_belief)
         print(f'adding new belief {new_belief.formula}')
         self._expand(new_belief)
@@ -110,14 +111,13 @@ class BeliefBase:
         beliefBase = self.__copy__()
         contradiction = True
         queue = [beliefBase]
-        index = 0
-        not_new_belief = Belief(f'~{new_belief.cnf}')
+        not_new_belief = Belief(f'~({new_belief.cnf})')
         while contradiction:
             possible_belief_bases = []
             contradiction = False
             current_belief_base = queue.pop(0)
             for belief in current_belief_base.beliefBase.values():
-                if self.resolution(not_new_belief):
+                if current_belief_base.resolution(not_new_belief):
                     new_state = beliefBase.__copy__()
                     new_state.beliefBase.pop(belief.formula)
                     queue.append(new_state)
@@ -125,16 +125,14 @@ class BeliefBase:
                 else:
                     possible_belief_bases.append(current_belief_base)
                     break
-            if contradiction:
-                index += 1
-            elif len(queue) > 0:
-                alternative_belief_base = queue.pop(0)
-                while len(alternative_belief_base.beliefBase) == len(possible_belief_bases[0].beliefBase):
-                    possible_belief_bases.append(alternative_belief_base)
-                    if len(queue) > 0:
-                        alternative_belief_base = queue.pop(0)
-                    else:
-                        break
+        if len(queue) > 0:
+            alternative_belief_base = queue.pop(0)
+            while len(alternative_belief_base.beliefBase) == len(possible_belief_bases[0].beliefBase):
+                possible_belief_bases.append(alternative_belief_base)
+                if len(queue) > 0:
+                    alternative_belief_base = queue.pop(0)
+                else:
+                    break
 
         best_plausibility_order = possible_belief_bases[0].get_plausibility()
         self.beliefBase = possible_belief_bases[0].beliefBase
@@ -148,12 +146,12 @@ class BeliefBase:
         Figure 7.12 in the book
         """
         clauses = []  # Clauses is the set of clauses in the CNF representation of KB A !alpha
-        for kb in self.beliefBase.values():
-            for disskb in self.dissociate(str(kb.cnf), " & "):
-                if disskb[0] == "(":
-                    clauses.append(disskb[1:-1])
+        for belief in self.beliefBase.values():
+            for dissociated_belief in self.dissociate(str(belief.cnf), " & "):
+                if dissociated_belief[0] == "(":
+                    clauses.append(dissociated_belief[1:-1])
                 else:
-                    clauses.append(disskb)
+                    clauses.append(dissociated_belief)
 
         for dissalpha in self.dissociate(str(alpha.cnf), " & "):
             if dissalpha[0] == "(":
