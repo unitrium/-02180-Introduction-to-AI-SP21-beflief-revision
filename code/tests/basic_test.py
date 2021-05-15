@@ -103,9 +103,9 @@ def test_contraction_recovery():
 
 def test_revision_closure():
     agent = Agent([('p'), ('q'), ('p>>q'), ('r')])
-    new_belief = Belief('~q')
-    agent.belief_base.revise(new_belief)
-    assert agent.belief_base.resolution(Not(new_belief))
+    new_belief = Belief('q')
+    agent.belief_base.revise('~q')
+    assert not agent.belief_base.resolution(new_belief)
 
 # beliefs are added succesfully.
 
@@ -113,8 +113,7 @@ def test_revision_closure():
 def test_revision_success():
 
     agent = Agent([('p'), ('q'), ('p>>q'), ('r')])
-    new_belief = Belief('~r')
-    agent.belief_base.revise(new_belief)
+    agent.belief_base.revise('~r')
     assert '~r' in agent.belief_base.beliefBase
 
 # the outcome is a subset of the union between starting belief base and the new belief.
@@ -122,10 +121,9 @@ def test_revision_success():
 
 def test_revision_inclusion():
     agent = Agent([('p'), ('q'), ('p>>q')])
-    new_belief = Belief('r')
     a: int
     a = 0
-    agent.belief_base.revise(new_belief)
+    agent.belief_base.revise('r')
     for key, belief in agent.belief_base.beliefBase.items():
         if key != 'p' or key != 'q' or key != 'p>>q' or key != 'r':
             a = a+1
