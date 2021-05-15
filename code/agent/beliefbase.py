@@ -95,7 +95,8 @@ class BeliefBase:
     def revise(self, new_formula: str):
         """Function to add a new belief to the belief base with consistency."""
         new_belief = Belief(new_formula)
-        self.contract(new_belief)
+        not_new_belief = Belief(f'~({new_belief.cnf})')
+        self.contract(not_new_belief)
         print(f'adding new belief {new_belief.formula}')
         self._expand(new_belief)
 
@@ -111,13 +112,12 @@ class BeliefBase:
         beliefBase = self.__copy__()
         contradiction = True
         queue = [beliefBase]
-        not_new_belief = Belief(f'~({new_belief.cnf})')
         while contradiction:
             possible_belief_bases = []
             contradiction = False
             current_belief_base = queue.pop(0)
             for belief in current_belief_base.beliefBase.values():
-                if current_belief_base.resolution(not_new_belief):
+                if current_belief_base.resolution(new_belief):
                     print('contradiction')
                     new_state = current_belief_base.__copy__()
                     new_state.beliefBase.pop(belief.formula)
