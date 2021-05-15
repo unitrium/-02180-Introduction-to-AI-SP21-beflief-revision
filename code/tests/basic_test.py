@@ -36,8 +36,7 @@ def test_contraction_success():
     a = true
     for key, belief in agent.belief_base.beliefBase:
         if key=='r':
-            a = false
-        
+            a = false   
     assert a
 
 #check that the result is a subset of the original beliefbase.
