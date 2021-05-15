@@ -27,9 +27,10 @@ python main.py
 ```
 Then, you will have different possible actions:
 ```python
-p #add a belief to the belief base (here you add p)
-clear #clear the belief base
-quit #quit the code
+add #to add a belief to the belief base
+display #to display the current belief base
+clear #to clear the belief base
+quit #to stop the agent
 ```
 
 To add a belief you can use the following symbols:
