@@ -102,10 +102,12 @@ class BeliefBase:
     def _expand(self, new_belief: Belief):
         self.beliefBase[new_belief.formula] = new_belief
 
-    def contract(self, new_belief: Belief) -> bool:
+    def contract(self, new_belief: Belief) -> None:
         """Contracts the belief base. It is assumed that the new belief is not a tautology.
         Does a graph search to remove all the beliefs until it doesn't contradict anymore.
         """
+        if len(self.beliefBase.keys()) == 0:
+            return
         beliefBase = self.__copy__()
         contradiction = True
         queue = [beliefBase]
