@@ -119,7 +119,7 @@ class BeliefBase:
             for belief in current_belief_base.beliefBase.values():
                 if current_belief_base.resolution(not_new_belief):
                     print('contradiction')
-                    new_state = beliefBase.__copy__()
+                    new_state = current_belief_base.__copy__()
                     new_state.beliefBase.pop(belief.formula)
                     queue.append(new_state)
                     contradiction = True
@@ -134,7 +134,9 @@ class BeliefBase:
                     alternative_belief_base = queue.pop(0)
                 else:
                     break
-
+        if len(possible_belief_bases) == 0:
+            self.beliefBase.clear()
+            return
         best_plausibility_order = possible_belief_bases[0].get_plausibility()
         self.beliefBase = possible_belief_bases[0].beliefBase
         for beliefBase in possible_belief_bases:
@@ -146,6 +148,7 @@ class BeliefBase:
         Check if the belief is entailed in the the belief base.
         Figure 7.12 in the book
         """
+        alpha = Belief(f'~({alpha.cnf})')
         clauses = []  # Clauses is the set of clauses in the CNF representation of KB A !alpha
         for belief in self.beliefBase.values():
             for dissociated_belief in self.dissociate(str(belief.cnf), " & "):
