@@ -16,6 +16,14 @@ def test_revision():
     assert len(agent.belief_base.beliefBase) == 3
 
 
+def test_revsion_basic():
+    agent = Agent(['p'])
+    agent.belief_base.revise('~p')
+    assert len(agent.belief_base.beliefBase.keys()) == 1
+    assert '~p' in agent.belief_base.beliefBase
+    assert 'p' not in agent.belief_base.beliefBase
+
+
 #if we try to remove belief from base, none of the beliefs in base will entail the belief after contraction.
 def test_contraction_closure():
     #knowledge base is p,q,p->q,r contract q : Cn(p,r) or Cn(p>>q,r) 
