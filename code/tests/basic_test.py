@@ -64,22 +64,25 @@ def test_contraction_inclusion():
             a = a+1
     assert len(agent.belief_base.beliefBase) == a
 
-# test that the base didn't change
-
+# test that the base didn't change if something which is not present is contracted.
 
 def test_contraction_vacuity():
     # knowledge base is p, p->q contract r : Cn(p,p->q)
     # pass if there is no change.
     agent = Agent([('p'), ('q'), ('p>>q')])
     new_belief = Belief('r')
-    copy = agent.belief_base.__copy__()
     agent.belief_base.contract(new_belief)
-
-    assert copy == agent.belief_base.beliefBase
+    a: int
+    a = 0
+    for key, belief in agent.belief_base.beliefBase.items():
+        if key == 'p' or key == 'q' or key == 'p>>q':
+            a = a+1
+    #we make sure there are 3 beliefs and that they are the ones we started with.
+    assert len(agent.belief_base.beliefBase) == a == 3
 
 
 def test_contraction_extensionality():
-    # do 10 times
+    # do twice
     # knowledge base is p, p<->q,r contract p<->q : Cn(p,r)
     # do once knowledge base is p, p<->q,r contract p->q & q->p : Cn(p,r)
 
@@ -89,7 +92,10 @@ def test_contraction_extensionality():
     agent.belief_base.contract(new_belief)
     agent2.belief_base.contract(new_belief)
     # pass if all created belief bases are equivalent
-    assert agent.belief_base.beliefBase == agent2.belief_base.beliefBase
+    for key, belief in agent.belief_base.beliefBase.items():
+        if not agent2.belief_base.beliefBase.__contains__(key):
+            assert False
+    assert True
 
 # it's not really possible to test recovery but our function should by definition make sure this postulate holds true.
 
@@ -133,15 +139,41 @@ def test_revision_inclusion():
 
 
 def test_revision_vacuity():
+    # knowledge base is p,q, p->q revise r : Cn(p,q,p->q, r)
+    # pass if r is added with no contraction.
+    agent = Agent([('p'), ('q'), ('p>>q')])
+    agent.belief_base.revise('r')
+    a: int
+    a = 0
+    for key, belief in agent.belief_base.beliefBase.items():
+        if key == 'p' or key == 'q' or key == 'p>>q' or key == 'r':
+            a = a+1
+    #we make sure there are 3 beliefs and that they are the ones we started with.
+    assert len(agent.belief_base.beliefBase) == a == 3+1
+
+#I'm not sure how I would prove that the base will stay consistent no matter the input. It seems to me that some of the other tests already tests a scenario for this.
+
+def test_revision_consistency():
 
     pass
 
 # you should get the same result when doing revision with the same beliefbase and the same new belief
 
+def test_revision_extensionality():
+    # do twice times
+    # knowledge base is p, p<->q,r contract p<->q : Cn(p,r)
+    # do once knowledge base is p, p<->q,r contract p->q & q->p : Cn(p,r)
 
-def test_revision_consistency():
+    agent = Agent([('p'), ('q'), ('p>>q'), ('r')])
+    agent2 = Agent([('p'), ('q'), ('p>>q'), ('r')])
+    agent.belief_base.revise('~q')
+    agent2.belief_base.revise('~q')
+    # pass if all created belief bases are equivalent
+    for key, belief in agent.belief_base.beliefBase.items():
+        if not agent2.belief_base.beliefBase.__contains__(key):
+            assert False
+    assert True
 
-    pass
 
 # not sure how to test this?
 
