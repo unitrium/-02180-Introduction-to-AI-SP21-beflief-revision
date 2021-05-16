@@ -28,7 +28,7 @@ def test_revsion_basic():
     assert 'p' not in agent.belief_base.beliefBase
 
 
-# if we try to remove belief from base, none of the beliefs in base will entail the belief after contraction.
+# How would you test that the function is deductively closed?
 def test_contraction_closure():
     # knowledge base is p,q,p->q,r contract q : Cn(p,r) or Cn(p>>q,r)
     agent = Agent([('p'), ('q'), ('p>>q'), ('r')])
@@ -104,7 +104,7 @@ def test_contraction_recovery():
     # how would i test this?
     pass
 
-# if we add a belief there should be no contradictions in the knowledge base.
+# How would you test that the function is deductively closed?
 
 
 def test_revision_closure():
