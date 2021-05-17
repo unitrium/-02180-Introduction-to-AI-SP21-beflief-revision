@@ -118,7 +118,6 @@ class BeliefBase:
             current_belief_base = queue.pop(0)
             for belief in current_belief_base.beliefBase.values():
                 if current_belief_base.resolution(new_belief):
-                    print('contradiction')
                     new_state = current_belief_base.__copy__()
                     new_state.beliefBase.pop(belief.formula)
                     queue.append(new_state)
