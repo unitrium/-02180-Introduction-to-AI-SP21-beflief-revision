@@ -41,3 +41,15 @@ To add a belief you can use the following symbols:
 >> #implies p>>q
 () #Parenthesis to structure the belief p>>(q&r)
 ```
+
+## How to run the tests
+
+To be able to run the test you need the following package:  
+It is already installed if you have run the requirements.txt file
+* pytest 6.2.3
+
+Then, the following command is used to run the tests
+```python
+python test.py
+```
+
